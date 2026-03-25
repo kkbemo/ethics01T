@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>나의 도덕관 사전 점검</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ebe0;
+    --card: #ffffff;
+    --dark: #1a1a2e;
+    --lp1: #e05c37;
+    --lp1-light: #fff0ec;
+    --lp2: #1d4ed8;
+    --lp2-light: #eff6ff;
+    --lp12: #7c3aed;
+    --lp12-light: #f5f3ff;
+    --muted: #64748b;
+    --border: #e2ddd5;
+    --text: #1a1a2e;
+    --radius: 18px;
+    --shadow: 0 2px 24px rgba(26,26,46,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,26,46,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ─────────────────────────── */
+  .app-header {
+    background: var(--dark);
+    color: white;
+    padding: 36px 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .app-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(224,92,55,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .app-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(29,78,216,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Main Content ────────────────────── */
+  .content {
+    flex: 1;
+    padding: 20px 16px 32px;
+  }
+
+  /* ── Cards ───────────────────────────── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+  }
+
+  /* ── Topic Tags ──────────────────────── */
+  .topic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 14px;
+  }
+  .tag-lp1 { background: var(--lp1-light); color: var(--lp1); }
+  .tag-lp2 { background: var(--lp2-light); color: var(--lp2); }
+  .tag-lp12 { background: var(--lp12-light); color: var(--lp12); }
+
+  /* ── Inputs ──────────────────────────── */
+  .input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 15px 18px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text);
+    background: #faf9f7;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 4px rgba(26,26,46,0.08);
+  }
+
+  /* ── Buttons ─────────────────────────── */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+
+  .btn-dark {
+    background: var(--dark);
+    color: white;
+  }
+  .btn-dark:hover { background: #2d2d4e; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,26,46,0.25); }
+  .btn-dark:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 2px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--bg); border-color: #ccc; }
+
+  .btn-sm {
+    padding: 11px 16px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .btn-row .btn { flex: 1; margin: 0; }
+
+  /* ── Progress Dots ───────────────────── */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0 6px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .dot.done { background: #94a3b8; }
+  .dot.active { width: 24px; border-radius: 4px; background: var(--dark); }
+
+  /* ── Question ────────────────────────── */
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .q-counter {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .q-text {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 22px;
+    word-break: keep-all;
+  }
+
+  /* ── Options ─────────────────────────── */
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 13px;
+    margin-bottom: 9px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.55;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text);
+    background: #faf9f7;
+    text-align: left;
+    transition: all 0.15s;
+    word-break: keep-all;
+  }
+  .option-btn:last-child { margin-bottom: 0; }
+  .option-btn:hover { border-color: var(--dark); background: white; }
+  .option-btn.sel-lp1 { border-color: var(--lp1); background: var(--lp1-light); color: var(--lp1); font-weight: 700; }
+  .option-btn.sel-lp2 { border-color: var(--lp2); background: var(--lp2-light); color: var(--lp2); font-weight: 700; }
+  .option-btn.sel-lp12 { border-color: var(--lp12); background: var(--lp12-light); color: var(--lp12); font-weight: 700; }
+
+  .opt-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .option-btn.sel-lp1 .opt-circle { border-color: var(--lp1); background: var(--lp1); }
+  .option-btn.sel-lp2 .opt-circle { border-color: var(--lp2); background: var(--lp2); }
+  .option-btn.sel-lp12 .opt-circle { border-color: var(--lp12); background: var(--lp12); }
+  .option-btn[class*="sel-"] .opt-circle::after {
+    content: '';
+    width: 8px; height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  /* ── Scale ───────────────────────────── */
+  .scale-wrap { margin-bottom: 4px; }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .scale-btn {
+    padding: 12px 4px 10px;
+    border: 2px solid var(--border);
+    border-radius: 11px;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+    background: #faf9f7;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.15s;
+    word-break: keep-all;
+  }
+  .scale-btn .num { font-size: 18px; font-weight: 900; display: block; margin-bottom: 3px; }
+  .scale-btn:hover { border-color: var(--dark); color: var(--dark); background: white; }
+  .scale-btn.sel-lp1 { border-color: var(--lp1); background: var(--lp1); color: white; }
+  .scale-btn.sel-lp2 { border-color: var(--lp2); background: var(--lp2); color: white; }
+  .scale-btn.sel-lp12 { border-color: var(--lp12); background: var(--lp12); color: white; }
+
+  .scale-endlabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    padding: 0 2px;
+  }
+
+  /* ── Stats row ───────────────────────── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat-box {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-num { font-family: 'Black Han Sans', sans-serif; font-size: 36px; color: var(--dark); }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 700; letter-spacing: 0.03em; }
+
+  /* ── Result bars ─────────────────────── */
+  .result-block { margin-bottom: 28px; }
+  .result-block:last-child { margin-bottom: 0; }
+
+  .result-q-text {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 12px;
+    word-break: keep-all;
+  }
+
+  .bar-item { margin-bottom: 9px; }
+  .bar-item:last-child { margin-bottom: 0; }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 5px;
+  }
+  .bar-label { font-size: 12px; color: var(--text); line-height: 1.4; word-break: keep-all; flex: 1; padding-right: 8px; }
+  .bar-count { font-size: 11px; color: var(--muted); white-space: nowrap; font-weight: 700; }
+
+  .bar-track {
+    height: 28px;
+    background: #f1ece3;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 0;
+  }
+  .bar-fill span { color: white; font-size: 11px; font-weight: 700; }
+  .fill-lp1 { background: linear-gradient(90deg, #f4a68c, var(--lp1)); }
+  .fill-lp2 { background: linear-gradient(90deg, #93c5fd, var(--lp2)); }
+  .fill-lp12 { background: linear-gradient(90deg, #c4b5fd, var(--lp12)); }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ── Summary ─────────────────────────── */
+  .sum-item {
+    padding: 12px 14px;
+    border-radius: 11px;
+    background: #faf8f5;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--border);
+  }
+  .sum-item.lp1 { border-color: var(--lp1); }
+  .sum-item.lp2 { border-color: var(--lp2); }
+  .sum-item.lp12 { border-color: var(--lp12); }
+  .sum-q { font-size: 11px; color: var(--muted); margin-bottom: 4px; line-height: 1.5; word-break: keep-all; }
+  .sum-a { font-size: 13px; font-weight: 700; color: var(--text); word-break: keep-all; }
+
+  /* ── Animations ──────────────────────── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  .slide-up { animation: slideUp 0.3s ease forwards; }
+  .popped { animation: pop 0.2s ease; }
+
+  /* ── Empty / Loading ─────────────────── */
+  .loading-msg, .empty-msg {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--muted);
+  }
+  .empty-msg .big { font-size: 44px; margin-bottom: 12px; }
+  .empty-msg p { font-size: 14px; line-height: 1.7; }
+
+  /* ── Participants list ───────────────── */
+  .participants {
+    font-size: 11px;
+    color: #aaa;
+    line-height: 1.8;
+    margin-top: 10px;
+    word-break: break-all;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: none;
+    color: #ccc;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 0;
+    text-decoration: underline;
+    display: block;
+    margin: 8px auto 0;
+  }
+  .reset-btn:hover { color: #f87171; }
+
+  @media (max-width: 380px) {
+    .header-title { font-size: 26px; }
+    .q-text { font-size: 15px; }
+    .scale-btn { font-size: 9px; }
+    .scale-btn .num { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"><div class="loading-msg">불러오는 중…</div></div>
+
+<script>
+const STORAGE_KEY = 'moral_quiz_2026_v2';
+
+const QS = [
+  {
+    id:'q1', tag:'lp1', tagLabel:'학습포인트 1 · 도덕과 행복',
+    text:'도덕적으로 올바른 행동을 하면, 반드시 행복해질 수 있다고 생각하나요?',
+    type:'scale'
+  },
+  {
+    id:'q2', tag:'lp1', tagLabel:'학습포인트 1 · 시나리오',
+    text:'준서는 친구가 시험에서 부정행위하는 것을 목격했습니다. 신고하면 옳은 일이지만, 친구와의 관계가 끝날 수도 있습니다. 준서는 어떻게 해야 할까요?',
+    type:'choice',
+    opts:['반드시 신고한다 — 옳고 그름이 먼저', '신고하지 않는다 — 친구 관계와 행복이 더 중요', '친구에게 먼저 말해 스스로 고백하도록 설득한다']
+  },
+  {
+    id:'q3', tag:'lp1', tagLabel:'학습포인트 1 · 의무',
+    text:'내가 손해를 보거나 불행해지더라도, 옳은 일이라면 반드시 해야 한다고 생각하나요?',
+    type:'scale'
+  },
+  {
+    id:'q4', tag:'lp2', tagLabel:'학습포인트 2 · 행위자',
+    text:'평소에 이기적이고 나쁜 행동을 해온 사람이, 어느 날 넘어진 할머니를 도와드렸습니다. 이 행동은 도덕적으로 진정 좋은 행동일까요?',
+    type:'choice',
+    opts:['예 — 누구든 결과적으로 도움이 되었으니 좋은 행동', '아니오 — 평소 됨됨이를 보면 진심이 아닐 것', '잘 모르겠다']
+  },
+  {
+    id:'q5', tag:'lp2', tagLabel:'학습포인트 2 · 행위 vs 행위자',
+    text:'어떤 사람이 도덕적인지 판단할 때, 더 중요한 것은 무엇인가요?',
+    type:'choice',
+    opts:['그 사람이 실제로 한 행동들', '그 사람의 마음씨와 성격']
+  },
+  {
+    id:'q6', tag:'lp12', tagLabel:'학습포인트 1+2 · 종합',
+    text:'"거짓말은 절대 하면 안 된다"는 규칙이 있습니다. 나쁜 사람이 나를 피해 숨은 친구가 어디 있냐고 묻습니다. 이 상황에서 거짓말을 해도 될까요?',
+    type:'choice',
+    opts:['안 된다 — 규칙은 어떤 상황에서도 예외가 없다', '된다 — 친구를 보호하는 게 더 중요하다', '잘 모르겠다']
+  }
+];
+
+const SCALE_LABELS = ['전혀\n그렇지\n않다','그렇지\n않다','보통\n이다','그렇다','매우\n그렇다'];
+const SCALE_FULL = ['전혀 그렇지 않다','그렇지 않다','보통이다','그렇다','매우 그렇다'];
+
+let S = { screen:'home', name:'', qi:0, ans:{} };
+
+/* ── Storage ─────────────────────── */
+async function loadAll() {
+  try {
+    const r = await window.storage.get(STORAGE_KEY, true);
+    if (r && r.value) return JSON.parse(r.value);
+  } catch(e){}
+  return [];
+}
+async function saveOne(obj) {
+  const all = await loadAll();
+  all.push(obj);
+  await window.storage.set(STORAGE_KEY, JSON.stringify(all), true);
+}
+async function resetAll() {
+  if (!confirm('모든 응답 데이터를 삭제할까요?\n(교사용 초기화)')) return;
+  await window.storage.set(STORAGE_KEY, JSON.stringify([]), true);
+  showResults();
+}
+
+/* ── Helpers ─────────────────────── */
+function tagClass(t) { return t==='lp1'?'lp1':t==='lp2'?'lp2':'lp12'; }
+function selClass(t) { return `sel-${tagClass(t)}`; }
+function fillClass(t) { return `fill-${tagClass(t)}`; }
+function answerLabel(q, idx) {
+  if (q.type==='scale') return SCALE_FULL[idx] ?? '-';
+  return q.opts[idx] ?? '-';
+}
+
+/* ── Render root ─────────────────── */
+const root = () => document.getElementById('root');
+
+function go(screen) {
+  S.screen = screen;
+  if (screen === 'results') { showResults(); return; }
+  renderScreen();
+}
+
+function renderScreen() {
+  root().innerHTML = '';
+  root().className = 'slide-up';
+  void root().offsetHeight; // reflow
+
+  if (S.screen === 'home')     root().innerHTML = homeHTML();
+  else if (S.screen === 'quiz') root().innerHTML = quizHTML();
+  else if (S.screen === 'done') root().innerHTML = doneHTML();
+
+  attachListeners();
+}
+
+/* ── Home ────────────────────────── */
+function homeHTML() {
+  return `
+    <div class="app-header">
+      <div class="header-badge">🧭 도덕 사전 점검</div>
+      <div class="header-title">나의<br>도덕관은?</div>
+      <div class="header-subtitle">서양 도덕 기준 학습 전 · 내 생각 먼저 확인하기</div>
+    </div>
+    <div class="content">
+      <div class="card slide-up">
+        <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:20px;">
+          총 6문항 · 정답이 없습니다 😊<br>지금 내 솔직한 생각을 골라주세요!
+        </p>
+        <label class="input-label">이름 또는 번호</label>
+        <input type="text" id="name-input" placeholder="예: 홍길동 / 17번" maxlength="20" autocomplete="off">
+        <div style="height:14px"></div>
+        <button class="btn btn-dark" id="start-btn" onclick="startQuiz()" disabled>
+          ✏️ 퀴즈 시작하기
+        </button>
+        <div style="height:10px"></div>
+        <button class="btn btn-ghost" onclick="go('results')">
+          📊 전체 결과 보기
+        </button>
+      </div>
+    </div>`;
+}
+
+function attachListeners() {
+  const ni = document.getElementById('name-input');
+  const sb = document.getElementById('start-btn');
+  if (ni && sb) {
+    ni.addEventListener('input', () => { sb.disabled = ni.value.trim() === ''; });
+    ni.addEventListener('keydown', e => { if(e.key==='Enter' && ni.value.trim()) startQuiz(); });
+  }
+}
+
+function startQuiz() {
+  const ni = document.getElementById('name-input');
+  if (!ni || !ni.value.trim()) return;
+  S.name = ni.value.trim();
+  S.qi = 0;
+  S.ans = {};
+  S.screen = 'quiz';
+  renderScreen();
+}
+
+/* ── Quiz ────────────────────────── */
+function quizHTML() {
+  const q = QS[S.qi];
+  const ans = S.ans[q.id];
+  const hasAns = ans !== undefined;
+  const isLast = S.qi === QS.length - 1;
+  const tc = tagClass(q.tag);
+
+  const dotsHTML = QS.map((_,i) => {
+    let cls = 'dot';
+    if (i < S.qi) cls += ' done';
+    else if (i === S.qi) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  let optsHTML = '';
+  if (q.type === 'scale') {
+    optsHTML = `
+      <div class="scale-wrap">
+        <div class="scale-row">
+          ${[0,1,2,3,4].map(i => {
+            const lines = SCALE_LABELS[i].split('\n').join('<br>');
+            const sel = ans===i ? `sel-${tc}` : '';
+            return `<button class="scale-btn ${sel}" onclick="pick(${i})" data-i="${i}">
+              <span class="num">${i+1}</span>${lines}
+            </button>`;
+          }).join('')}
+        </div>
+        <div class="scale-endlabels">
+          <span>← 그렇지 않다</span>
+          <span>그렇다 →</span>
+        </div>
+      </div>`;
+  } else {
+    optsHTML = q.opts.map((opt, i) => {
+      const sel = ans===i ? `sel-${tc}` : '';
+      return `<button class="option-btn ${sel}" onclick="pick(${i})" data-i="${i}">
+        <span class="opt-circle"></span>
+        <span>${opt}</span>
+      </button>`;
+    }).join('');
+  }
+
+  return `
+    <div class="app-header">
+      <div class="header-badge">✏️ ${S.name}</div>
+      <div class="header-title">${S.qi+1}<span style="font-family:'Noto Sans KR';font-size:18px;font-weight:400;opacity:0.5"> / ${QS.length}</span></div>
+      <div class="header-subtitle">솔직하게 골라주세요 — 정답은 없어요</div>
+    </div>
+    <div class="content">
+      <div class="progress-dots">${dotsHTML}</div>
+      <div class="card slide-up">
+        <div class="q-meta">
+          <span class="topic-tag tag-${tc}">${q.tagLabel}</span>
+          <span class="q-counter">Q${S.qi+1}</span>
+        </div>
+        <div class="q-text">${q.text}</div>
+        ${optsHTML}
+        <div class="btn-row">
+          ${S.qi > 0 ? `<button class="btn btn-ghost" onclick="prevQ()" style="flex:1">← 이전</button>` : ''}
+          <button class="btn btn-dark" onclick="${isLast?'submit()':'nextQ()'}"
+            ${!hasAns?'disabled':''} style="flex:2">
+            ${isLast ? '✅ 제출하기' : '다음 →'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function pick(idx) {
+  const q = QS[S.qi];
+  S.ans[q.id] = idx;
+  // Animate the card
+  const card = document.querySelector('.card');
+  if (card) { card.classList.add('popped'); setTimeout(() => card.classList.remove('popped'), 200); }
+  renderScreen();
+}
+
+function nextQ() { if (S.qi < QS.length-1) { S.qi++; renderScreen(); } }
+function prevQ() { if (S.qi > 0) { S.qi--; renderScreen(); } }
+
+async function submit() {
+  const allDone = QS.every(q => S.ans[q.id] !== undefined);
+  if (!allDone) { alert('모든 문항에 답해주세요!'); return; }
+  try {
+    await saveOne({ name: S.name, ts: new Date().toISOString(), answers: {...S.ans} });
+    S.screen = 'done';
+    renderScreen();
+  } catch(e) {
+    alert('저장 오류가 발생했습니다. 다시 시도해주세요.');
+  }
+}
+
+/* ── Done ────────────────────────── */
+function doneHTML() {
+  const summaryHTML = QS.map(q => {
+    const aLabel = answerLabel(q, S.ans[q.id]);
+    const tc = tagClass(q.tag);
+    const shortQ = q.text.length > 38 ? q.text.slice(0,38)+'…' : q.text;
+    return `<div class="sum-item ${tc}">
+      <div class="sum-q">Q. ${shortQ}</div>
+      <div class="sum-a">→ ${aLabel}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="app-header">
+      <div class="header-badge">🎉 제출 완료</div>
+      <div class="header-title">잘 했어요!</div>
+      <div class="header-subtitle">${S.name} 님의 응답이 저장되었습니다</div>
+    </div>
+    <div class="content">
+      <div class="card slide-up">
+        <p style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--muted);">📋 내 응답 요약</p>
+        ${summaryHTML}
+        <div style="height:16px"></div>
+        <button class="btn btn-dark" onclick="go('results')">📊 전체 결과 보기</button>
+      </div>
+    </div>`;
+}
+
+/* ── Results ─────────────────────── */
+async function showResults() {
+  root().innerHTML = `<div class="loading-msg">📊 집계 중…</div>`;
+  const all = await loadAll();
+  const n = all.length;
+
+  function agg(qid) {
+    const c = {};
+    all.forEach(r => {
+      const v = r.answers[qid];
+      if (v !== undefined) c[v] = (c[v]||0) + 1;
+    });
+    return c;
+  }
+
+  const blocksHTML = QS.map(q => {
+    const tc = tagClass(q.tag);
+    const counts = agg(q.id);
+    const numOpts = q.type==='scale' ? 5 : q.opts.length;
+    const labels = q.type==='scale' ? SCALE_FULL : q.opts;
+
+    const barsHTML = Array.from({length:numOpts}, (_,i) => {
+      const cnt = counts[i] || 0;
+      const pct = n > 0 ? Math.round(cnt/n*100) : 0;
+      const lbl = labels[i];
+      const shortLbl = lbl.length > 22 ? lbl.slice(0,22)+'…' : lbl;
+      return `
+        <div class="bar-item">
+          <div class="bar-meta">
+            <span class="bar-label">${shortLbl}</span>
+            <span class="bar-count">${cnt}명 ${pct>0?'('+pct+'%)':''}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill fill-${tc}" style="width:${pct}%">
+              ${pct>=12?`<span>${pct}%</span>`:''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="result-block">
+        <span class="topic-tag tag-${tc}">${q.tagLabel}</span>
+        <div class="result-q-text">${q.text}</div>
+        ${barsHTML}
+      </div>
+      <div class="divider"></div>`;
+  }).join('');
+
+  const names = all.map(r=>r.name).join(' · ');
+
+  root().innerHTML = `
+    <div class="app-header">
+      <div class="header-badge">📊 실시간 결과</div>
+      <div class="header-title">우리 반의<br>도덕관</div>
+      <div class="header-subtitle">전체 응답 집계 현황</div>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num">${n}</div>
+          <div class="stat-label">참여 인원</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">${QS.length}</div>
+          <div class="stat-label">문항 수</div>
+        </div>
+      </div>
+      ${n > 0 ? `
+        <div class="card slide-up">
+          ${blocksHTML}
+          ${names ? `<p class="participants">참여: ${names}</p>` : ''}
+        </div>
+      ` : `
+        <div class="card slide-up">
+          <div class="empty-msg">
+            <div class="big">🤔</div>
+            <p>아직 제출한 학생이 없습니다.<br>먼저 퀴즈에 참여해보세요!</p>
+          </div>
+        </div>
+      `}
+      <button class="btn btn-ghost btn-sm" onclick="showResults()" style="margin-bottom:10px;">🔄 새로고침</button>
+      <button class="btn btn-ghost btn-sm" onclick="go('home')">← 처음으로</button>
+      <button class="reset-btn" onclick="resetAll()">🗑 데이터 초기화 (교사용)</button>
+    </div>`;
+}
+
+/* ── Boot ────────────────────────── */
+renderScreen();
+</script>
+</body>
+</html>
