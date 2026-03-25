@@ -473,67 +473,171 @@
 <div id="root"><div class="loading-msg">불러오는 중…</div></div>
 
 <script>
-const STORAGE_KEY = 'moral_quiz_2026_v2';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwY8ZXidMoqBfWzI1jWVxJYzDUU45rHctKQb4d_VJJbyWYrUts01Jcx6ef4zBuQT1zD/exec';
 
-const QS = [
+// 축: duty=의무vs결과, actor=행위vs행위자, emotion=감정vs이성, scope=개인vs다수
+// score: A선택=+1, B선택=-1
+const QS_POOL = [
+  // ── 의무 vs 결과 (duty) ──────────────────────────────
   {
-    id:'q1', tag:'lp1', tagLabel:'학습포인트 1 · 도덕과 행복',
-    text:'도덕적으로 올바른 행동을 하면, 반드시 행복해질 수 있다고 생각하나요?',
-    type:'scale'
+    id:'d1', axis:'duty',
+    text:'체험학습 날 학교 규정상 스마트폰 지참이 금지인데, 반 애들 대부분이 몰래 챙겨가고 있다. 두 사람의 생각이 다르다.\n\n• A: "규정이 있으면 따라야지. 이유가 있어서 만든 규정이잖아."\n• B: "긴급상황에 연락도 해야 하는데, 현실적으로 필요하면 가져가는 게 맞지."',
+    opts:['A', 'B'], score:[1,-1]
   },
   {
-    id:'q2', tag:'lp1', tagLabel:'학습포인트 1 · 시나리오',
-    text:'준서는 친구가 시험에서 부정행위하는 것을 목격했습니다. 신고하면 옳은 일이지만, 친구와의 관계가 끝날 수도 있습니다. 준서는 어떻게 해야 할까요?',
-    type:'choice',
-    opts:['반드시 신고한다 — 옳고 그름이 먼저', '신고하지 않는다 — 친구 관계와 행복이 더 중요', '친구에게 먼저 말해 스스로 고백하도록 설득한다']
+    id:'d2', axis:'duty',
+    text:'친한 친구가 급식 줄에서 "나 학원 늦는다, 앞에 끼워줘"라고 한다. 두 사람의 생각이 다르다.\n\n• A: "아무리 바빠도 줄은 줄이지. 다들 기다리고 있잖아."\n• B: "어차피 몇 분 차이인데 뭐. 학원 지각하면 더 곤란하잖아."',
+    opts:['A', 'B'], score:[1,-1]
   },
   {
-    id:'q3', tag:'lp1', tagLabel:'학습포인트 1 · 의무',
-    text:'내가 손해를 보거나 불행해지더라도, 옳은 일이라면 반드시 해야 한다고 생각하나요?',
-    type:'scale'
+    id:'d3', axis:'duty',
+    text:'선생님이 숙제 검사를 하는데, 못 해온 친구가 "나 어제 아파서 못 했다고 말해줘"라고 부탁했다. 두 사람의 생각이 다르다.\n\n• A: "미안한데 그건 못 하겠어. 거짓말은 거짓말이니까."\n• B: "친구가 혼나는 것보다는 낫지. 이번 한 번쯤은 괜찮지 않아?"',
+    opts:['A', 'B'], score:[1,-1]
   },
   {
-    id:'q4', tag:'lp2', tagLabel:'학습포인트 2 · 행위자',
-    text:'평소에 이기적이고 나쁜 행동을 해온 사람이, 어느 날 넘어진 할머니를 도와드렸습니다. 이 행동은 도덕적으로 진정 좋은 행동일까요?',
-    type:'choice',
-    opts:['예 — 누구든 결과적으로 도움이 되었으니 좋은 행동', '아니오 — 평소 됨됨이를 보면 진심이 아닐 것', '잘 모르겠다']
+    id:'d4', axis:'duty',
+    text:'단체 채팅방에서 반 친구를 욕하는 내용이 올라오고 있다. 그 친구와 나는 딱히 친하지 않다. 두 사람의 생각이 다르다.\n\n• A: "보고만 있는 것도 어쩐지 같이 한 것 같아서. 뭐라고 해야 할 것 같아."\n• B: "내가 굳이 나서면 나도 같이 욕 먹을 수 있잖아. 그냥 읽씹하는 게 나아."',
+    opts:['A', 'B'], score:[1,-1]
+  },
+  // ── 행위 vs 행위자 (actor) ──────────────────────────
+  {
+    id:'a1', axis:'actor',
+    text:'방과후 교실 청소가 있었다.\n\n평소에 당번도 잘 안 지키고 청소도 자주 빠지던 아이가, 오늘은 누가 시키지도 않았는데 구석구석 열심히 청소했다.\n평소에 항상 솔선수범해서 청소하던 아이가, 오늘은 몸이 안 좋아서 대충 쓸고 앉아 있었다.\n\n더 도덕적인 사람은?',
+    opts:['오늘 열심히 청소한 아이', '평소에 솔선수범하던 아이'], score:[-1,1]
   },
   {
-    id:'q5', tag:'lp2', tagLabel:'학습포인트 2 · 행위 vs 행위자',
-    text:'어떤 사람이 도덕적인지 판단할 때, 더 중요한 것은 무엇인가요?',
-    type:'choice',
-    opts:['그 사람이 실제로 한 행동들', '그 사람의 마음씨와 성격']
+    id:'a2', axis:'actor',
+    text:'두 사람 모두 무거운 짐을 들고 힘들어하는 친구를 도와줬다. 평소 모습이 달랐다.\n\n• A: 평소에도 주변을 잘 챙기고 힘든 사람 그냥 못 지나치는 편이라, 자연스럽게 "내가 들어줄게" 했다.\n• B: 보통은 자기 일에만 집중하는 편인데, 그날은 못 본 척이 안 돼서 도왔다.\n\n더 도덕적인 사람은?',
+    opts:['A', 'B'], score:[1,-1]
   },
   {
-    id:'q6', tag:'lp12', tagLabel:'학습포인트 1+2 · 종합',
-    text:'"거짓말은 절대 하면 안 된다"는 규칙이 있습니다. 나쁜 사람이 나를 피해 숨은 친구가 어디 있냐고 묻습니다. 이 상황에서 거짓말을 해도 될까요?',
-    type:'choice',
-    opts:['안 된다 — 규칙은 어떤 상황에서도 예외가 없다', '된다 — 친구를 보호하는 게 더 중요하다', '잘 모르겠다']
+    id:'a3', axis:'actor',
+    text:'두 사람이 각각 길에서 지갑을 주웠다. 둘 다 경찰에 신고했다.\n\n• A: 평소에도 정직하고 규칙 잘 지키기로 소문난 아이\n• B: 평소엔 거짓말도 좀 하고 자기 것 챙기기 바쁜 아이\n\n더 도덕적인 사람은?',
+    opts:['A', 'B'], score:[1,-1]
+  },
+  // ── 동기: 감정 vs 의무 (emotion) ──────────────────
+  {
+    id:'e1', axis:'emotion',
+    text:'반 친구가 발표 자료를 못 만들어서 쩔쩔매고 있다. 두 사람 모두 도와줬는데, 이유가 달랐다.\n\n• A: "보고 있으니까 나도 불안하고 안타까워서. 그냥 같이 하자고 했어."\n• B: "팀원이 준비 못 하면 같이 도와줘야지. 그게 맞는 거니까."',
+    opts:['A', 'B'], score:[-1,1]
+  },
+  {
+    id:'e2', axis:'emotion',
+    text:'오늘 발표를 완전히 망쳐서 엄청 속상해하는 친구 옆에 한참 앉아 있었다. 두 사람 모두 같은 행동을 했는데, 이유가 달랐다.\n\n• A: "보고 있으니까 나까지 마음이 아프더라고. 뭐라도 해주고 싶었어."\n• B: "친구가 힘들 때 옆에 있어주는 게 당연한 거 아냐. 그래야 하니까."',
+    opts:['A', 'B'], score:[-1,1]
+  },
+  {
+    id:'e3', axis:'emotion',
+    text:'길에서 할머니가 무거운 짐을 들고 계단을 오르고 계셨다. 두 사람 모두 도와드렸는데, 이유가 달랐다.\n\n• A: "너무 힘들어 보여서. 그냥 지나치면 내가 마음이 불편할 것 같았어."\n• B: "도움이 필요한 사람이 있으면 도와야지. 그게 옳은 거니까."',
+    opts:['A', 'B'], score:[-1,1]
+  },
+  // ── 개인 vs 다수 (scope) ────────────────────────────
+  {
+    id:'s1', axis:'scope',
+    text:'기차 선로에 5명이 묶여 있다. 이대로면 기차가 그 5명을 친다. 선로 변환기를 당기면 방향이 바뀌어 5명은 살지만, 그쪽 선로에 있던 1명이 희생된다. 나는 지금 변환기 앞에 서 있다.\n\n• A: "내가 직접 그 1명을 죽게 만드는 거잖아. 그건 못 하겠어."\n• B: "어차피 누군가는 다치는 상황이라면, 더 많은 사람을 살리는 게 낫지 않아?"',
+    opts:['A', 'B'], score:[1,-1]
+  },
+  {
+    id:'s2', axis:'scope',
+    text:'학교 예산이 부족해서 둘 중 하나만 선택해야 한다.\n\n• A: 휠체어를 쓰는 장애학생 3명을 위한 엘리베이터와 특수 화장실 설치\n• B: 전교생 600명이 함께 쓸 냉난방 시설 교체\n\n더 도덕적인 선택은?',
+    opts:['A', 'B'], score:[1,-1]
+  },
+  {
+    id:'s3', axis:'scope',
+    text:'학급 회의에서 체험학습 장소를 정하는데 의견이 갈렸다. 다수결로 28명 중 22명이 놀이공원을 원하는데, 나머지 6명은 체력적으로 힘들어서 가기 어렵다고 했다. 두 사람의 생각이 다르다.\n\n• A: "6명도 소중한 우리 반 친구잖아. 다 같이 갈 수 있는 데로 바꿔야 해."\n• B: "그래도 22명이 원하는 거면 그게 반 전체에는 더 좋은 거 아니야?"',
+    opts:['A', 'B'], score:[1,-1]
+  },
+  {
+    id:'s4', axis:'scope',
+    text:'마을에 전염병이 빠르게 퍼지고 있다. 두 가지 정책을 두고 고민 중이다.\n\n• A: 감염 가능성이 있는 1명을 본인 동의 없이 즉시 격리해서 마을 전체를 보호한다.\n• B: 시간이 걸리더라도 그 사람의 동의를 먼저 구한 뒤 격리를 진행한다.\n\n더 도덕적인 정책은?',
+    opts:['A', 'B'], score:[1,-1]
   }
 ];
 
-const SCALE_LABELS = ['전혀\n그렇지\n않다','그렇지\n않다','보통\n이다','그렇다','매우\n그렇다'];
-const SCALE_FULL = ['전혀 그렇지 않다','그렇지 않다','보통이다','그렇다','매우 그렇다'];
+// 문항 순서 섞기 (Fisher-Yates)
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+const QS = shuffle(QS_POOL);
+
+// 유형 분석
+function analyzeType(answers) {
+  const axes = { duty:0, actor:0, emotion:0, scope:0 };
+  QS_POOL.forEach(q => {
+    const idx = answers[q.id];
+    if (idx !== undefined) axes[q.axis] += q.score[idx];
+  });
+
+  // 가장 강한 축 찾기
+  const types = [
+    { key:'duty',    pos:'🏛️ 원칙주의자',   neg:'🌻 결과주의자'  },
+    { key:'actor',   pos:'🌿 성품중심자',    neg:'⚡ 행위중심자'  },
+    { key:'emotion', pos:'🧠 이성형 인간',   neg:'🌊 공감형 인간' },
+    { key:'scope',   pos:'🛡️ 개인권리 수호자', neg:'🌍 최대행복 추구자' }
+  ];
+
+  let maxAbs = 0, result = null;
+  types.forEach(t => {
+    const v = axes[t.key];
+    if (Math.abs(v) > maxAbs) { maxAbs = Math.abs(v); result = { t, v }; }
+  });
+
+  if (!result || maxAbs < 1) return {
+    label: '⚖️ 균형형 탐색자',
+    desc: '도덕적 판단에서 한 가지 기준에 치우치지 않아요. 상황에 따라 유연하게 생각하는 편이에요. 수업에서 여러 이론을 배우면 자신의 기준이 더 선명해질 거예요!'
+  };
+
+  const label = result.v > 0 ? result.t.pos : result.t.neg;
+  const descs = {
+    '🏛️ 원칙주의자': '"옳기 때문에 한다"는 기준으로 판단해요. 결과보다 행동의 동기와 원칙을 중요하게 여겨요. 칸트 철학과 비슷한 입장이에요.',
+    '🌻 결과주의자': '"더 좋은 결과를 만드는 게 선이다"라고 생각해요. 행동의 의도보다 실제로 얼마나 많은 사람에게 도움이 됐는지를 중시해요. 공리주의와 가까운 입장이에요.',
+    '🌿 성품중심자': '"어떤 사람이냐"가 도덕의 핵심이라고 느껴요. 한 번의 행동보다 평소의 됨됨이와 성품을 더 중요하게 봐요. 덕 윤리학과 비슷한 입장이에요.',
+    '⚡ 행위중심자': '"무엇을 했느냐"가 도덕의 기준이라고 생각해요. 평소 성격과 관계없이, 지금 이 행동이 옳은지 그른지가 더 중요해요.',
+    '🧠 이성형 인간': '감정보다 이성과 원칙에 따라 도덕을 판단해요. 감정이 흔들려도 옳은 일이라면 해야 한다고 생각하는 편이에요.',
+    '🌊 공감형 인간': '공감과 감정이 도덕 판단의 출발점이에요. 규칙보다 눈앞의 사람이 느끼는 감정과 관계를 더 중요하게 여겨요.',
+    '🛡️ 개인권리 수호자': '다수의 이익보다 한 개인의 권리가 침해되어선 안 된다고 생각해요. 사람을 수단으로 쓰는 건 옳지 않다는 입장이에요.',
+    '🌍 최대행복 추구자': '더 많은 사람에게 더 많은 행복이 돌아가는 게 옳다고 생각해요. 전체의 이익을 위해 일부를 조정하는 걸 수용하는 편이에요.'
+  };
+
+  return { label, desc: descs[label] || '' };
+}
 
 let S = { screen:'home', name:'', qi:0, ans:{} };
 
-/* ── Storage ─────────────────────── */
+/* ── Storage (Google Sheets) ─────── */
 async function loadAll() {
   try {
-    const r = await window.storage.get(STORAGE_KEY, true);
-    if (r && r.value) return JSON.parse(r.value);
-  } catch(e){}
-  return [];
+    const res = await fetch(GAS_URL + '?action=get&t=' + Date.now());
+    const json = await res.json();
+    const rows = json.data || [];
+    if (rows.length < 2) return [];
+    const header = rows[0];
+    return rows.slice(1).map(r => {
+      const ans = {};
+      QS_POOL.forEach(q => {
+        const col = header.indexOf(q.id);
+        if (col >= 0 && r[col] !== '') ans[q.id] = Number(r[col]);
+      });
+      return { name: r[1], ts: r[0], answers: ans };
+    });
+  } catch(e) { return []; }
 }
 async function saveOne(obj) {
-  const all = await loadAll();
-  all.push(obj);
-  await window.storage.set(STORAGE_KEY, JSON.stringify(all), true);
+  await fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({ name: obj.name, answers: obj.answers }),
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 간주
 }
 async function resetAll() {
-  if (!confirm('모든 응답 데이터를 삭제할까요?\n(교사용 초기화)')) return;
-  await window.storage.set(STORAGE_KEY, JSON.stringify([]), true);
-  showResults();
+  alert('초기화는 Google Sheets에서 직접 행을 삭제해주세요.');
 }
 
 /* ── Helpers ─────────────────────── */
@@ -541,7 +645,6 @@ function tagClass(t) { return t==='lp1'?'lp1':t==='lp2'?'lp2':'lp12'; }
 function selClass(t) { return `sel-${tagClass(t)}`; }
 function fillClass(t) { return `fill-${tagClass(t)}`; }
 function answerLabel(q, idx) {
-  if (q.type==='scale') return SCALE_FULL[idx] ?? '-';
   return q.opts[idx] ?? '-';
 }
 
@@ -571,16 +674,16 @@ function homeHTML() {
   return `
     <div class="app-header">
       <div class="header-badge">🧭 도덕 사전 점검</div>
-      <div class="header-title">나의<br>도덕관은?</div>
-      <div class="header-subtitle">서양 도덕 기준 학습 전 · 내 생각 먼저 확인하기</div>
+      <div class="header-title">다음 중<br>도덕적인<br>사람은?</div>
+      <div class="header-subtitle">정답 없음 · 지금 내 직관대로 골라주세요</div>
     </div>
     <div class="content">
       <div class="card slide-up">
         <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:20px;">
-          총 6문항 · 정답이 없습니다 😊<br>지금 내 솔직한 생각을 골라주세요!
+          총 14문항 · 정답이 없습니다 😊<br>지금 내 솔직한 생각을 골라주세요!
         </p>
-        <label class="input-label">이름 또는 번호</label>
-        <input type="text" id="name-input" placeholder="예: 홍길동 / 17번" maxlength="20" autocomplete="off">
+        <label class="input-label">학번</label>
+        <input type="text" id="name-input" placeholder="예: 20301" maxlength="20" autocomplete="off">
         <div style="height:14px"></div>
         <button class="btn btn-dark" id="start-btn" onclick="startQuiz()" disabled>
           ✏️ 퀴즈 시작하기
@@ -618,7 +721,7 @@ function quizHTML() {
   const ans = S.ans[q.id];
   const hasAns = ans !== undefined;
   const isLast = S.qi === QS.length - 1;
-  const tc = tagClass(q.tag);
+  const tc = 'lp12';
 
   const dotsHTML = QS.map((_,i) => {
     let cls = 'dot';
@@ -627,33 +730,16 @@ function quizHTML() {
     return `<div class="${cls}"></div>`;
   }).join('');
 
+  const qTextFormatted = q.text.replace(/\n/g, '<br>');
+
   let optsHTML = '';
-  if (q.type === 'scale') {
-    optsHTML = `
-      <div class="scale-wrap">
-        <div class="scale-row">
-          ${[0,1,2,3,4].map(i => {
-            const lines = SCALE_LABELS[i].split('\n').join('<br>');
-            const sel = ans===i ? `sel-${tc}` : '';
-            return `<button class="scale-btn ${sel}" onclick="pick(${i})" data-i="${i}">
-              <span class="num">${i+1}</span>${lines}
-            </button>`;
-          }).join('')}
-        </div>
-        <div class="scale-endlabels">
-          <span>← 그렇지 않다</span>
-          <span>그렇다 →</span>
-        </div>
-      </div>`;
-  } else {
-    optsHTML = q.opts.map((opt, i) => {
-      const sel = ans===i ? `sel-${tc}` : '';
-      return `<button class="option-btn ${sel}" onclick="pick(${i})" data-i="${i}">
-        <span class="opt-circle"></span>
-        <span>${opt}</span>
-      </button>`;
-    }).join('');
-  }
+  optsHTML = q.opts.map((opt, i) => {
+    const sel = ans===i ? `sel-${tc}` : '';
+    return `<button class="option-btn ${sel}" onclick="pick(${i})" data-i="${i}">
+      <span class="opt-circle"></span>
+      <span>${opt}</span>
+    </button>`;
+  }).join('');
 
   return `
     <div class="app-header">
@@ -665,10 +751,9 @@ function quizHTML() {
       <div class="progress-dots">${dotsHTML}</div>
       <div class="card slide-up">
         <div class="q-meta">
-          <span class="topic-tag tag-${tc}">${q.tagLabel}</span>
-          <span class="q-counter">Q${S.qi+1}</span>
+          <span class="q-counter" style="font-size:13px;font-weight:700;color:var(--muted);">Q${S.qi+1} / ${QS.length}</span>
         </div>
-        <div class="q-text">${q.text}</div>
+        <div class="q-text">${qTextFormatted}</div>
         ${optsHTML}
         <div class="btn-row">
           ${S.qi > 0 ? `<button class="btn btn-ghost" onclick="prevQ()" style="flex:1">← 이전</button>` : ''}
@@ -707,28 +792,34 @@ async function submit() {
 
 /* ── Done ────────────────────────── */
 function doneHTML() {
+  const type = analyzeType(S.ans);
   const summaryHTML = QS.map(q => {
-    const aLabel = answerLabel(q, S.ans[q.id]);
-    const tc = tagClass(q.tag);
-    const shortQ = q.text.length > 38 ? q.text.slice(0,38)+'…' : q.text;
-    return `<div class="sum-item ${tc}">
-      <div class="sum-q">Q. ${shortQ}</div>
+    const aLabel = q.opts[S.ans[q.id]] ?? '-';
+    const shortQ = q.text.replace(/\n/g,' ');
+    const shortQTrim = shortQ.length > 40 ? shortQ.slice(0,40)+'…' : shortQ;
+    return `<div class="sum-item lp12">
+      <div class="sum-q">Q. ${shortQTrim}</div>
       <div class="sum-a">→ ${aLabel}</div>
     </div>`;
   }).join('');
 
   return `
     <div class="app-header">
-      <div class="header-badge">🎉 제출 완료</div>
-      <div class="header-title">잘 했어요!</div>
-      <div class="header-subtitle">${S.name} 님의 응답이 저장되었습니다</div>
+      <div class="header-badge">🎉 분석 완료</div>
+      <div class="header-title">${S.name} 님의<br>도덕관 유형</div>
+      <div class="header-subtitle">내 선택이 보여주는 가치관</div>
     </div>
     <div class="content">
+      <div class="card slide-up" style="text-align:center;padding:30px 24px;">
+        <div style="font-size:52px;margin-bottom:12px;">${type.label.split(' ')[0]}</div>
+        <div style="font-family:'Black Han Sans',sans-serif;font-size:24px;color:var(--dark);margin-bottom:16px;">${type.label.split(' ').slice(1).join(' ')}</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.8;text-align:left;background:#faf8f5;padding:16px;border-radius:12px;">${type.desc}</div>
+      </div>
       <div class="card slide-up">
         <p style="font-size:13px;font-weight:700;margin-bottom:14px;color:var(--muted);">📋 내 응답 요약</p>
         ${summaryHTML}
         <div style="height:16px"></div>
-        <button class="btn btn-dark" onclick="go('results')">📊 전체 결과 보기</button>
+        <button class="btn btn-dark" onclick="go('results')">📊 우리 반 전체 결과 보기</button>
       </div>
     </div>`;
 }
@@ -749,10 +840,10 @@ async function showResults() {
   }
 
   const blocksHTML = QS.map(q => {
-    const tc = tagClass(q.tag);
+    const tc = 'lp12';
     const counts = agg(q.id);
-    const numOpts = q.type==='scale' ? 5 : q.opts.length;
-    const labels = q.type==='scale' ? SCALE_FULL : q.opts;
+    const numOpts = q.opts.length;
+    const labels = q.opts;
 
     const barsHTML = Array.from({length:numOpts}, (_,i) => {
       const cnt = counts[i] || 0;
@@ -775,8 +866,7 @@ async function showResults() {
 
     return `
       <div class="result-block">
-        <span class="topic-tag tag-${tc}">${q.tagLabel}</span>
-        <div class="result-q-text">${q.text}</div>
+        <div class="result-q-text">${q.text.replace(/\n/g,'<br>')}</div>
         ${barsHTML}
       </div>
       <div class="divider"></div>`;
@@ -787,7 +877,7 @@ async function showResults() {
   root().innerHTML = `
     <div class="app-header">
       <div class="header-badge">📊 실시간 결과</div>
-      <div class="header-title">우리 반의<br>도덕관</div>
+      <div class="header-title">우리 반이<br>선택한<br>도덕적 인물</div>
       <div class="header-subtitle">전체 응답 집계 현황</div>
     </div>
     <div class="content">
